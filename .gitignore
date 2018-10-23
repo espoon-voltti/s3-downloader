@@ -1,3 +1,6 @@
+# Go
+/vendor/
+
 # Editors & IDEs
 .idea/
 cmake-build-debug/
