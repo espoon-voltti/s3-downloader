@@ -8,6 +8,21 @@ Helper utility to download S3 files without installing the whole AWS CLI.
 - [`dep`](https://github.com/golang/dep)
 - `make`
 
+## Installation
+
+Download latest release from [GitHub releases](https://github.com/espoon-voltti/s3-downloader/releases)
+
+or compile from source with:
+
+```
+dep ensure
+make build-linux
+```
+
+## Usage
+
+Usage: `./bin/s3downloader-linux-amd64 bucket prefix targetDir`
+
 ## Development
 
 Uses [`dep`](https://github.com/golang/dep)
