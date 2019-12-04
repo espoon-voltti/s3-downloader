@@ -46,12 +46,11 @@ jobs:
       PROJECT: voltti/s3-downloader
     steps:
       - attach_workspace:
-          at: ./artifacts
+          at: ./
       - run:
           name: Publish release in GitHub
           command: |
-            VERSION="${CIRCLE_TAG:-"$CIRCLE_SHA1"}"
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete "${CIRCLE_TAG}" ./bin/
 
 workflows:
   version: 2
