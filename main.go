@@ -2,19 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-/**
- * Details of an S3 object to be downloaded
- */
+/*
+DownloadDetails of an S3 object to be downloaded
+*/
 type DownloadDetails struct {
 	Bucket     string
 	Key        string
