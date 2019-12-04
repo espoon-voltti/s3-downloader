@@ -4,7 +4,7 @@ Helper utility to download S3 files without installing the whole AWS CLI.
 
 ## Requirements
 
-- Golang
+- Golang >=1.12.x
 - [`dep`](https://github.com/golang/dep)
 - `make`
 
