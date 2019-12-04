@@ -38,7 +38,16 @@ make build-linux
 Workflow based on: https://circleci.com/blog/publishing-to-github-releases-via-circleci/
 and: https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag
 
-1. Create and push a git tag
+1. Create a git tag:
+
+        git tag -a v1.0.1 -m "- This is a change included in this release"
+
+    - Name releases like: `vX.X.X`, following [semantic versioning](https://semver.org/)
+    - Include all changes in message
+1. Push git tag:
+
+        git push --tags
+
 1. CircleCI creates a GitHub release with artifacts from the tag
     - **NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build
         - Exists for @ci-voltti (with scope `repo`)
