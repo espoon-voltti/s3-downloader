@@ -1,0 +1,71 @@
+version: 2.1
+
+jobs:
+  build:
+    working_directory: /go/src/github.com/espoon-voltti/s3-downloader
+    docker:
+      - image: circleci/golang:1.12
+    steps:
+      - checkout
+      - run: go version
+      - restore_cache:
+          keys:
+            - vendor-{{ checksum "Gopkg.lock" }}
+            - dep
+      - run:
+          name: Install dependencies
+          command: |
+            if [ ! -d vendor ]; then
+              if ! type dep >/dev/null 2>&1; then
+                go get -u github.com/golang/dep/cmd/dep
+              fi
+              dep ensure -vendor-only
+            fi
+      - save_cache:
+          key: vendor-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+      - save_cache:
+          key: dep
+          paths:
+            - /go/bin/dep
+      - run: go vet ./...
+      - run: make build-linux
+      - persist_to_workspace:
+          root: /go/src/github.com/espoon-voltti/s3-downloader
+          paths:
+            - bin/*
+
+  release:
+    working_directory: /go/src/github.com/espoon-voltti/s3-downloader
+    docker:
+      - image: cibuilds/github:0.13
+    environment:
+      ARTIFACT: bin/s3downloader-linux-amd64
+      PROJECT: voltti/s3-downloader
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: Publish release in GitHub
+          command: |
+            VERSION="${CIRCLE_TAG:-"$CIRCLE_SHA1"}"
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
+      - release:
+          context: org-global
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
