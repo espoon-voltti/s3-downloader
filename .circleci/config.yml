@@ -30,6 +30,7 @@ jobs:
           paths:
             - /go/bin/dep
       - run: go vet ./...
+      - run: go test -v ./...
       - run: make build-linux
       - persist_to_workspace:
           root: /go/src/github.com/espoon-voltti/s3-downloader
