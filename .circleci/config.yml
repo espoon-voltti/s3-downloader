@@ -55,7 +55,7 @@ jobs:
               -r "${CIRCLE_PROJECT_REPONAME}" \
               -c "${CIRCLE_SHA1}" \
               -n "${CIRCLE_TAG}" \
-              -b "$(git tag -l --format='%(contents)' "${CIRCLE_TAG}")"
+              -b "$(git tag -l --format='%(contents)' "${CIRCLE_TAG}")" \
               -delete \
               "${CIRCLE_TAG}" ./bin/
 
