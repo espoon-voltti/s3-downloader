@@ -1,10 +1,14 @@
 # s3-downloader
 
-Helper utility to download S3 files without installing the whole AWS CLI.
+Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI.
+
+Uses [`dep`](https://github.com/golang/dep)
+for dependency configuration.
 
 ## Requirements
 
 - Golang >=1.12.x
+    - and `$GOPATH` set (see [#development]())
 - [`dep`](https://github.com/golang/dep)
 - `make`
 
@@ -25,8 +29,28 @@ Usage: `./bin/s3downloader-linux-amd64 bucket prefix targetDir`
 
 ## Development
 
-Uses [`dep`](https://github.com/golang/dep)
-for dependency configuration.
+**NOTE:** Golang has the concept of [`$GOPATH`](https://github.com/golang/go/wiki/GOPATH#directory-layout).
+
+This means you should clone this repository to your `$GOPATH`
+(e.g. `~/go/src/github.com/espoon-voltti/s3-downloader`) to build it.
+
+### Install Golang
+
+with [homebrew](http://mxcl.github.io/homebrew/):
+
+```Shell
+sudo brew install go
+```
+
+with [apt](http://packages.qa.debian.org/a/apt.html)-get:
+
+```Shell
+sudo apt-get install golang
+```
+
+[install Golang manually](https://golang.org/doc/install)
+or
+[compile it yourself](https://golang.org/doc/install/source)
 
 ### Git pre-commit hook
 
