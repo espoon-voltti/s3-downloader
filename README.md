@@ -79,7 +79,7 @@ and: https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag
 
 1. Create a git tag:
 
-        git tag -a v1.0.1 -m "v1.0.1" -m "- This is a change included in this release"
+        git tag -a v1.0.1 -m "- This is a change included in this release"
 
     - Name releases like: `vX.X.X`, following [semantic versioning](https://semver.org/)
     - Include all changes in message
