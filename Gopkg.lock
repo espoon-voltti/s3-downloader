@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:f30f8eebfe1402888dd01e55ffb0ab3d72f560e735112c11b6e5b453f2f84950"
+  digest = "1:a4264e9d67db1a71c3a79096a5c2ee3f41c84e230fdd3a351dc87d6ad8081947"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -32,6 +32,7 @@
     "internal/sdkuri",
     "internal/shareddefaults",
     "internal/strings",
+    "internal/sync/singleflight",
     "private/protocol",
     "private/protocol/eventstream",
     "private/protocol/eventstream/eventstreamapi",
@@ -49,8 +50,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "57d59cb8a86cc61293a3f828e66c23d52db6cfc5"
-  version = "v1.29.0"
+  revision = "e05b942778ce977989d572d8b334af7c2ec0e801"
+  version = "v1.29.2"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
