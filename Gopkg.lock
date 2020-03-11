@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:94a9ee49fc39bebe3cd960c692350ead35d1cd138902a18d900cde6d10d2da2b"
+  digest = "1:694c16ace58e3e27e16eb9ec938d86d5eab20766bcbe7bfc3ed410123ae45d53"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -51,8 +51,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "81abf80dec07700b14a91ece14b8eca6c5e6b4f8"
-  version = "v1.29.17"
+  revision = "ecf76c57b69f7395de7777edf1f8c5928d850581"
+  version = "v1.29.21"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
