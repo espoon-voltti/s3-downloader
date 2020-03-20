@@ -8,7 +8,7 @@ for dependency configuration.
 ## Requirements
 
 - Golang >=1.12.x
-    - and `$GOPATH` set (see [#development]())
+  - and `$GOPATH` set (see [#development]())
 - [`dep`](https://github.com/golang/dep)
 - `make`
 
@@ -18,7 +18,7 @@ Download latest release from [GitHub releases](https://github.com/espoon-voltti/
 
 or compile from source with:
 
-```
+```sh
 dep ensure
 make build-linux
 ```
@@ -38,13 +38,13 @@ This means you should clone this repository to your `$GOPATH`
 
 with [homebrew](http://mxcl.github.io/homebrew/):
 
-```Shell
+```sh
 sudo brew install go
 ```
 
 with [apt](http://packages.qa.debian.org/a/apt.html)-get:
 
-```Shell
+```sh
 sudo apt-get install golang
 ```
 
@@ -74,18 +74,22 @@ make build-linux
 
 ## Releasing
 
-Workflow based on: https://circleci.com/blog/publishing-to-github-releases-via-circleci/
-and: https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag
+Workflow based on: <https://circleci.com/blog/publishing-to-github-releases-via-circleci/>
+and: <https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag>
 
 1. Create a git tag:
 
-        git tag -a v1.0.1 -m "- This is a change included in this release"
+    ```sh
+    git tag -a v1.0.1 -m "- This is a change included in this release"
+    ```
 
     - Name releases like: `vX.X.X`, following [semantic versioning](https://semver.org/)
     - Include all changes in message
 1. Push git tag:
 
-        git push --follow-tags
+    ```sh
+    git push --follow-tags
+    ```
 
 1. CircleCI creates a GitHub release with artifacts from the tag
     - **NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build
