@@ -1,9 +1,22 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@3.4.2
+
 aliases:
   - &golang_image_version "1.12"
   - &gh_image_version "0.13"
   - &workspace_root ~/repo
+
+commands:
+  # Must be the last step in a job
+  notify_slack:
+    description: "Notify via Slack"
+    steps:
+      - slack/status:
+          fail_only: true
+          only_for_branches: master
+          # Webhook URL defined as $SLACK_WEBHOOK in CircleCI project settings
 
 executors:
   golang:
@@ -43,6 +56,7 @@ jobs:
           root: *workspace_root
           paths:
             - bin/*
+      - notify_slack
 
   release:
     executor: gh_release
@@ -63,6 +77,7 @@ jobs:
               -b "$(git tag -l --format='%(contents)' "${CIRCLE_TAG}")" \
               -delete \
               "${CIRCLE_TAG}" ./bin/
+      - notify_slack
 
 workflows:
   version: 2
