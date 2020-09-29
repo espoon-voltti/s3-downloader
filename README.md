@@ -2,15 +2,12 @@
 
 Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI.
 
-Uses [`dep`](https://github.com/golang/dep)
-for dependency configuration.
+Uses [Go modules](https://blog.golang.org/using-go-modules) for dependency configuration.
 
 ## Requirements
 
-- Golang >=1.12.x
-  - and `$GOPATH` set (see [#development]())
-- [`dep`](https://github.com/golang/dep)
-- `make`
+- Golang >=1.12.x with Go modules enabled (see [development](#development))
+- *OPTIONAL*: `make`
 
 ## Installation
 
@@ -19,20 +16,18 @@ Download latest release from [GitHub releases](https://github.com/espoon-voltti/
 or compile from source with:
 
 ```sh
-dep ensure
 make build-linux
+# or
+go build
 ```
 
 ## Usage
 
-Usage: `./bin/s3downloader-linux-amd64 bucket prefix targetDir`
+Usage: `./bin/s3downloader-linux-amd64 <bucket> <prefix> <targetDir>`
 
 ## Development
 
-**NOTE:** Golang has the concept of [`$GOPATH`](https://github.com/golang/go/wiki/GOPATH#directory-layout).
-
-This means you should clone this repository to your `$GOPATH`
-(e.g. `~/go/src/github.com/espoon-voltti/s3-downloader`) to build it.
+**NOTE:** This project uses Go modules, so you should check this repository outside `$GOPATH/src` to build it.
 
 ### Install Golang
 
@@ -58,12 +53,6 @@ Configure with:
 
 ```sh
 ln -s ../../scripts/pre-commit .git/hooks/pre-commit
-```
-
-### Install dependencies
-
-```sh
-dep ensure
 ```
 
 ### Build

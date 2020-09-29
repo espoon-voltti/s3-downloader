@@ -1,46 +1,51 @@
 version: 2.1
 
+aliases:
+  - &golang_image_version "1.12"
+  - &gh_image_version "0.13"
+  - &workspace_root ~/repo
+
+executors:
+  golang:
+    parameters:
+      golang_image_version:
+        type: string
+        default: *golang_image_version
+    docker:
+      - image: circleci/golang:<< parameters.golang_image_version >>
+    working_directory: *workspace_root
+
+  gh_release:
+    parameters:
+      gh_image_version:
+        type: string
+        default: *gh_image_version
+    docker:
+      - image: cibuilds/github:<< parameters.gh_image_version >>
+    working_directory: *workspace_root
+
 jobs:
   build:
-    working_directory: /go/src/github.com/espoon-voltti/s3-downloader
-    docker:
-      - image: circleci/golang:1.12
+    executor: golang
     steps:
       - checkout
       - run: go version
       - restore_cache:
           keys:
-            - vendor-{{ checksum "Gopkg.lock" }}
-            - dep
-      - run:
-          name: Install dependencies
-          command: |
-            if [ ! -d vendor ]; then
-              if ! type dep >/dev/null 2>&1; then
-                go get -u github.com/golang/dep/cmd/dep
-              fi
-              dep ensure -vendor-only
-            fi
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run: go mod download
       - save_cache:
-          key: vendor-{{ checksum "Gopkg.lock" }}
+          key: go-mod-v1-{{ checksum "go.sum" }}
           paths:
-            - vendor
-      - save_cache:
-          key: dep
-          paths:
-            - /go/bin/dep
-      - run: go vet ./...
-      - run: go test -v ./...
+            - "/go/pkg/mod"
       - run: make build-linux
       - persist_to_workspace:
-          root: /go/src/github.com/espoon-voltti/s3-downloader
+          root: *workspace_root
           paths:
             - bin/*
 
   release:
-    working_directory: /go/src/github.com/espoon-voltti/s3-downloader
-    docker:
-      - image: cibuilds/github:0.13
+    executor: gh_release
     environment:
       ARTIFACT: bin/s3downloader-linux-amd64
       PROJECT: voltti/s3-downloader
