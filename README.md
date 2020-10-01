@@ -1,5 +1,7 @@
 # s3-downloader
 
+[![CircleCI](https://circleci.com/gh/espoon-voltti/s3-downloader.svg?style=svg&circle-token=fe475ba7650b01b1961907882bb838d0eadc5e38)](https://app.circleci.com/pipelines/github/espoon-voltti/s3-downloader)
+
 Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI.
 
 Uses [Go modules](https://blog.golang.org/using-go-modules) for dependency configuration.
@@ -66,23 +68,7 @@ make build-linux
 Workflow based on: <https://circleci.com/blog/publishing-to-github-releases-via-circleci/>
 and: <https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag>
 
-1. Ensure all changes have been reviewed & merged to `master`
-1. Create a git tag in the `master` branch:
-
-    ```sh
-    git tag -a v1.0.1 -m "- This is a change included in this release"
-    ```
-
-    - Name releases like: `vX.X.X`, following [semantic versioning](https://semver.org/)
-    - Include all changes in message
-1. Push git tag:
-
-    ```sh
-    git push --follow-tags
-    ```
-
-    - **NOTE:** The push **must only contain the tag**,
-      and not commits as they will be rejected (all changes must go through PRs)
+1. Ensure all changes have been reviewed & merged to `master` and you have no local changes
+1. Run `./scripts/release.sh` and answer all prompts
 1. CircleCI creates a GitHub release with artifacts from the tag
-    - **NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build
-        - Exists for @ci-voltti (with scope `repo`)
+    - **NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build (exists for @ci-voltti with scope `repo`)
