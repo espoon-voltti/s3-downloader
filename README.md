@@ -47,7 +47,7 @@ or
 Configure with:
 
 ```sh
-ln -s ../../scripts/pre-commit .git/hooks/pre-commit
+ln -s ../../scripts/pre-commit.sh .git/hooks/pre-commit
 ```
 
 ### Build

@@ -7,6 +7,9 @@ BUILD_PATH 	= ./bin/$(BIN_NAME)
 
 .PHONY: tidy phony release
 
+fmt:
+	@$(GO_ENV) $(GO) fmt .
+
 tidy:
 	@$(GO_ENV) $(GO) mod tidy
 
