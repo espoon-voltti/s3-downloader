@@ -1,8 +1,7 @@
 # s3-downloader
 
-[![CircleCI](https://circleci.com/gh/espoon-voltti/s3-downloader.svg?style=svg&circle-token=fe475ba7650b01b1961907882bb838d0eadc5e38)](https://app.circleci.com/pipelines/github/espoon-voltti/s3-downloader)
-
-Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI.
+Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI. Uses AWS SDK for Go, so supports all its configuration methods
+(`~/.aws/credentials`, environment variables, credential servers etc).
 
 Uses [Go modules](https://blog.golang.org/using-go-modules) for dependency configuration.
 
@@ -15,13 +14,7 @@ Uses [Go modules](https://blog.golang.org/using-go-modules) for dependency confi
 
 Download latest release from [GitHub releases](https://github.com/espoon-voltti/s3-downloader/releases)
 
-or compile from source with:
-
-```sh
-make build-linux
-# or
-go build
-```
+or [compile from source](#build)
 
 ## Usage
 
@@ -33,19 +26,19 @@ Usage: `./bin/s3downloader-linux-amd64 <bucket> <prefix> <targetDir>`
 
 ### Install Golang
 
-with [homebrew](http://mxcl.github.io/homebrew/):
+With [homebrew](http://mxcl.github.io/homebrew/):
 
 ```sh
 sudo brew install go
 ```
 
-with [apt](http://packages.qa.debian.org/a/apt.html)-get:
+With [apt](http://packages.qa.debian.org/a/apt.html)-get:
 
 ```sh
 sudo apt-get install golang
 ```
 
-[install Golang manually](https://golang.org/doc/install)
+Or [install Golang manually](https://golang.org/doc/install)
 or
 [compile it yourself](https://golang.org/doc/install/source)
 
@@ -65,10 +58,11 @@ make build-linux
 
 ## Releasing
 
+**NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build (exists for @ci-voltti with scope `repo`)
+
 Workflow based on: <https://circleci.com/blog/publishing-to-github-releases-via-circleci/>
 and: <https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag>
 
 1. Ensure all changes have been reviewed & merged to `master` and you have no local changes
-1. Run `./scripts/release.sh` and answer all prompts
-1. CircleCI creates a GitHub release with artifacts from the tag
-    - **NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build (exists for @ci-voltti with scope `repo`)
+1. `make release`
+1. CI creates a GitHub release with artifacts from the tag
