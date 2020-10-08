@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2018-2020 City of Espoo
+#
+# SPDX-License-Identifier: MIT
+
 # Dependabot configuration: https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/configuration-options-for-dependency-updates#scheduleinterval
 version: 2
 updates:

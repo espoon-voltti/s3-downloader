@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2018-2020 City of Espoo
+
+SPDX-License-Identifier: MIT
+-->
+
 #### Summary
 <!-- Describe the change, including rationale and design decisions (not just what but also why) -->
 

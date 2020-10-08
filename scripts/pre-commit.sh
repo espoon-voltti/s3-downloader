@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2018-2020 City of Espoo
+#
+# SPDX-License-Identifier: MIT
+
 # Git pre-commit hook for linting Go source files
 # See README for installation instructions
 

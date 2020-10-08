@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2018-2020 City of Espoo
+
+SPDX-License-Identifier: MIT
+-->
+
 # s3-downloader
 
 Helper utility built in [Go](https://golang.org/) to download S3 files without installing the whole AWS CLI. Uses AWS SDK for Go, so supports all its configuration methods
