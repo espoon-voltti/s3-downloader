@@ -67,6 +67,9 @@ jobs:
       - attach_workspace:
           at: ./
       - run:
+          name: Compute checksum for release
+          command: sha256sum "$ARTIFACT" > ./"$ARTIFACT".sha256
+      - run:
           name: Publish release in GitHub
           command: |
             ghr -t "${GITHUB_TOKEN}" \
