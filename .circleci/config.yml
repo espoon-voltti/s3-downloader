@@ -38,6 +38,24 @@ executors:
     working_directory: *workspace_root
 
 jobs:
+  lint:
+    executor: golang
+    steps:
+      - checkout
+      - run: go version
+      - run:
+          name: gofmt check
+          command: |
+            unformatted=$(gofmt -l .)
+            [ -z "$unformatted" ] && exit 0
+
+            echo >&2 "Incorrectly formatted files. Please run:"
+            for fn in $unformatted; do
+              echo >&2 "  gofmt -w $PWD/$fn"
+            done
+
+            exit 1
+
   build:
     executor: golang
     steps:
@@ -86,6 +104,10 @@ workflows:
   version: 2
   build_and_release:
     jobs:
+      - lint:
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
       - build:
           filters:
             tags:
@@ -93,6 +115,7 @@ workflows:
       - release:
           context: org-global
           requires:
+            - lint
             - build
           filters:
             branches:
