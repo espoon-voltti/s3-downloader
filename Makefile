@@ -1,15 +1,20 @@
-GO = go
-ARCH = amd64
-OS = linux
-GO_ENV = GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=0
-BIN_NAME = s3downloader-$(OS)-$(ARCH)
+GO			= go
+ARCH 		= amd64
+OS 			= linux
+GO_ENV 		= GOOS=$(OS) GOARCH=$(ARCH) GO111MODULE=on CGO_ENABLED=0
+BIN_NAME 	= s3downloader-$(OS)-$(ARCH)
+BUILD_PATH 	= ./bin/$(BIN_NAME)
 
-.PHONY: build-linux
+.PHONY: tidy phony release
 
-build-linux: main.go
-	$(GO_ENV) $(GO) build -o bin/$(BIN_NAME) $<
-	chmod +x bin/$(BIN_NAME)
+tidy:
+	@$(GO_ENV) $(GO) mod tidy
 
-.PHONY: release
+build: main.go
+	$(GO_ENV) $(GO) build -o $(BUILD_PATH) $<
+	chmod +x $(BUILD_PATH)
+
 release:
 	./scripts/release.sh
+
+.DEFAULT_GOAL := build
