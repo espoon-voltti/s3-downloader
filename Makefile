@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-GO			= go
+GO 		= go
 ARCH 		= amd64
-OS 			= linux
+OS 		= linux
 GO_ENV 		= GOOS=$(OS) GOARCH=$(ARCH) GO111MODULE=on CGO_ENABLED=0
 BIN_NAME 	= s3downloader-$(OS)-$(ARCH)
 BUILD_PATH 	= ./bin/$(BIN_NAME)
