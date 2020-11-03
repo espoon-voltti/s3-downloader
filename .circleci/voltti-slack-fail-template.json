@@ -1,0 +1,34 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Your job *${CIRCLE_JOB}* has failed ⚠️ "
+      },
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Project*:\\n${CIRCLE_PROJECT_REPONAME}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Commiter*:\\n${CIRCLE_USERNAME}"
+        }
+      ]
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "View Job"
+          },
+          "url": "${CIRCLE_BUILD_URL}"
+        }
+      ]
+    }
+  ]
+}

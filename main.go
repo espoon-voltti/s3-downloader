@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2018-2020 City of Espoo
+//
+// SPDX-License-Identifier: MIT
+
 package main
 
 import (

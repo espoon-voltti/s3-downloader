@@ -1,11 +1,16 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2018-2020 City of Espoo
+#
+# SPDX-License-Identifier: MIT
+
 set -euo pipefail
 
 LATEST_TAG=$(git --no-pager describe --abbrev=0)
 CURRENT_BRANCH=$(git --no-pager rev-parse --abbrev-ref HEAD)
 
 if [ "$CURRENT_BRANCH" != "master" ]; then
-  echo "⚠️  WARNING: You are not in the "master" branch! Current branch: ${CURRENT_BRANCH}"
+  echo "⚠️  WARNING: You are not in the \"master\" branch! Current branch: ${CURRENT_BRANCH}"
   read -p "Press <return> if you're sure you want to release from this branch" -n 1 -r
 fi
 
