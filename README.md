@@ -26,6 +26,38 @@ or [compile from source](#build)
 
 Usage: `./bin/s3downloader-linux-amd64 <bucket> <prefix> <targetDir>`
 
+### Logging
+
+This tool logs in a simple JSON format (Voltti's "app-misc" type logs):
+
+```json
+{
+    "@timestamp": "2020-12-29T12:02:51+02:00",
+    "appBuild": "123",
+    "appCommit": "22eb5a510ae608615a1487ea2538673c7f84a765",
+    "appName": "my-app",
+    "env": "dev",
+    "exception": "Error", // Optional
+    "hostIp": "10.0.0.2",
+    "logLevel": "error",
+    "message": "Unable to list objects in bucket: my-bucket",
+    "stackTrace": "MissingRegion: could not find region configuration", // Optional
+    "type": "app-misc",
+    "userIdHash": "",
+    "version": "1"
+}
+```
+
+Configure the output with the following environment variables:
+
+| Field | Key | Default |
+|-|-|-|
+| `appBuild` | `APP_BUILD` | `"local"` |
+| `appCommit` | `APP_COMMIT` | `"HEAD"` |
+| `appName` | `APP_NAME` | `""` |
+| `env` | `VOLTTI_ENV` or `ENV` | `"local"` |
+| `hostIp` | `HOST_IP` | `""` |
+
 ## Development
 
 **NOTE:** This project uses Go modules, so you should check this repository outside `$GOPATH/src` to build it.

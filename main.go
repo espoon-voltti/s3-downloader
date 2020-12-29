@@ -15,15 +15,38 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/sirupsen/logrus"
 )
 
-/*
-DownloadDetails of an S3 object to be downloaded
-*/
+// DownloadDetails of an S3 object to be downloaded
 type DownloadDetails struct {
 	Bucket     string
 	Key        string
 	TargetFile string
+}
+
+// Shared logger to always include static fields
+var log *logrus.Entry
+
+func init() {
+	logrus.SetFormatter(&logrus.JSONFormatter{
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyTime:  "@timestamp",
+			logrus.FieldKeyLevel: "logLevel",
+			logrus.FieldKeyMsg:   "message",
+		},
+	})
+
+	log = logrus.WithFields(logrus.Fields{
+		"appBuild":   getEnv("APP_BUILD", "local"),
+		"appCommit":  getEnv("APP_COMMIT", "HEAD"),
+		"appName":    os.Getenv("APP_NAME"),
+		"env":        getEnv("VOLTTI_ENV", getEnv("ENV", "local")),
+		"hostIp":     os.Getenv("HOST_IP"),
+		"type":       "app-misc", // Voltti log type
+		"userIdHash": "",         // Required field, should be empty here
+		"version":    "1",        // Version of the log format
+	})
 }
 
 func main() {
@@ -65,7 +88,7 @@ func targetFilePath(key string, prefix string, targetDir string) string {
 func readArgs(argv []string) (string, string, string) {
 	argc := len(argv)
 	if argc != 4 {
-		fmt.Fprintf(os.Stderr, "Wrong number of arguments provided. Usage: %s bucket prefix targetDir\n", argv[0])
+		log.Error(fmt.Sprintf("Wrong number of arguments provided. Usage: %s bucket prefix targetDir", argv[0]))
 		os.Exit(1)
 	}
 	bucket := argv[1]
@@ -77,7 +100,7 @@ func readArgs(argv []string) (string, string, string) {
 func downloadObject(downloader *s3manager.Downloader, wg *sync.WaitGroup, details *DownloadDetails) {
 	defer wg.Done()
 
-	fmt.Fprintf(os.Stdout, "Downloading object key: %v, file: %q\n", details.Key, details.TargetFile)
+	log.Info(fmt.Sprintf("Downloading object key: %v, file: %q", details.Key, details.TargetFile))
 	file := createFile(details.TargetFile)
 	defer file.Close()
 
@@ -102,8 +125,10 @@ func createFile(targetFile string) *os.File {
 
 func check(err error, msg string, args ...interface{}) {
 	if err != nil {
-		fmt.Fprintf(os.Stderr, msg+"\n", args...)
-		fmt.Fprintf(os.Stderr, "Error message: %v.\n", err)
+		log.WithFields(logrus.Fields{
+			"exception":  "Error",
+			"stackTrace": err.Error(),
+		}).Error(fmt.Sprintf(msg, args...))
 		os.Exit(2)
 	}
 }
@@ -113,4 +138,13 @@ func ensureSuffix(s string, suffix string) string {
 		return s
 	}
 	return s + suffix
+}
+
+// Get environment variable value or default if not defined
+func getEnv(key string, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+
+	return defaultVal
 }
