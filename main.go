@@ -108,7 +108,7 @@ func downloadObject(downloader *s3manager.Downloader, wg *sync.WaitGroup, detail
 		Bucket: aws.String(details.Bucket),
 		Key:    aws.String(details.Key),
 	})
-	check(err, "Unable to download item %q", details.TargetFile)
+	check(err, "Unable to download item %q from %q to destination %q", details.Key, details.Bucket, details.TargetFile)
 }
 
 func createFile(targetFile string) *os.File {
