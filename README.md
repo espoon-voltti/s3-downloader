@@ -13,7 +13,7 @@ Uses [Go modules](https://blog.golang.org/using-go-modules) for dependency confi
 
 ## Requirements
 
-- Golang >=1.12.x with Go modules enabled (see [development](#development))
+- Golang >=1.17.x with Go modules enabled (see [development](#development))
 - *OPTIONAL*: `make`
 
 ## Installation
