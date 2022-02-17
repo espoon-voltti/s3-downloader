@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -euo pipefail
+
+cd "$( dirname "${BASH_SOURCE[0]}")/.."
+
+export GO111MODULE=on
+export TAG="${GITHUB_REF#refs/tags/}"
+
+go get github.com/tcnksm/ghr@v0.13.0
+
+sha256sum bin/s3downloader-linux-amd64 > ./bin/s3downloader-linux-amd64.sha256
+
+ghr -u "${GITHUB_REPOSITORY%/*}" \
+    -r "${GITHUB_REPOSITORY#*/}" \
+    -c "${GITHUB_SHA}" \
+    -n "${TAG}" \
+    -b "$(git tag -l --format='%(contents)' "${TAG}")" \
+    -soft \
+    "$TAG" ./bin/

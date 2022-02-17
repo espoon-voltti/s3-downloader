@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# gofmt check
+
+set -eou pipefail
+
+cd "$( dirname "${BASH_SOURCE[0]}")/.."
+
+go version
+
+if [ -z "$(gofmt -l .)" ]; then
+  echo "Lint OK"
+  exit 0
+fi
+
+echo "Incorrectly formatted files. Please run:"
+
+for fn in $unformatted; do
+    echo "  gofmt -w $PWD/$fn"
+done
+
+exit 1
