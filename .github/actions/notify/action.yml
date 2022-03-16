@@ -1,0 +1,50 @@
+name: "Notify to Slack"
+description: "Send notification to slack"
+
+inputs:
+  webhook_url:
+    description: "Slack webhook url"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: slackapi/slack-github-action@v1.18.0
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.webhook_url }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      with:
+          payload: |
+            {
+              "text": "CI ${{ job.status }} - <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }} - ${{ github.ref_name }}>",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "CI ${{ job.status }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project:*\n${{ github.repository }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch*:\n${{ github.ref_name }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View failed job>"
+                  }
+                }
+              ]
+            }

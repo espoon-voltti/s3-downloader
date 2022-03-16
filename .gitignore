@@ -30,3 +30,4 @@ fabric.properties
 
 # OSX
 .DS_Store
+_circleci
