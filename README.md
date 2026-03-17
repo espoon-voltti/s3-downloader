@@ -58,6 +58,47 @@ Configure the output with the following environment variables:
 | `env` | `VOLTTI_ENV` or `ENV` | `"local"` |
 | `hostIp` | `HOST_IP` | `""` |
 
+## Testing
+
+This project includes a Docker Compose setup for local testing with LocalStack (local AWS cloud stack).
+
+### Quick Start
+
+1. Start LocalStack and run tests:
+   ```sh
+   ./scripts/test.sh
+   ```
+
+2. Or test the downloader manually with Docker:
+   ```sh
+   docker compose run --rm s3-downloader test-bucket documents ./downloads
+   ```
+
+3. Or test locally using environment variables:
+   ```sh
+   export AWS_ACCESS_KEY_ID=test
+   export AWS_SECRET_ACCESS_KEY=test
+   export AWS_REGION=us-east-1
+   export AWS_ENDPOINT_URL=http://localhost:4566
+   go run main.go test-bucket documents ./downloads
+   ```
+
+4. Clean up:
+   ```sh
+   docker compose down -v
+   ```
+
+### Test Data
+
+The setup script creates a bucket `test-bucket` with the following files:
+- `documents/doc1.txt`
+- `documents/doc2.txt`
+- `documents/subfolder/nested.txt`
+
+Test data files are automatically generated inside the LocalStack container by the `./scripts/test.sh` script.
+
+You can add more test files using the AWS CLI with `--endpoint-url=http://localhost:4566`.
+
 ## Development
 
 **NOTE:** This project uses Go modules, so you should check this repository outside `$GOPATH/src` to build it.

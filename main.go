@@ -52,7 +52,21 @@ func init() {
 func main() {
 	bucket, prefix, targetDir := readArgs(os.Args)
 
-	sess, err := session.NewSession()
+	cfg := &aws.Config{}
+
+	// Support custom endpoint (e.g., for MinIO or LocalStack)
+	if endpoint := os.Getenv("AWS_ENDPOINT_URL"); endpoint != "" {
+		cfg.Endpoint = aws.String(endpoint)
+	}
+
+	// Enable path-style addressing for S3-compatible services
+	if os.Getenv("AWS_S3_FORCE_PATH_STYLE") == "true" {
+		cfg.S3ForcePathStyle = aws.Bool(true)
+	}
+
+	sess, err := session.NewSession(cfg)
+	check(err, "Unable to create AWS session")
+
 	svc := s3.New(sess)
 
 	resp, err := svc.ListObjects(&s3.ListObjectsInput{

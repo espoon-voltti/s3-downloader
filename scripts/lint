@@ -8,7 +8,9 @@ cd "$( dirname "${BASH_SOURCE[0]}")/.."
 
 go version
 
-if [ -z "$(gofmt -l .)" ]; then
+unformatted=$(gofmt -l .)
+
+if [ -z "$unformatted" ]; then
   echo "Lint OK"
   exit 0
 fi
