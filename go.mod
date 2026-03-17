@@ -4,7 +4,7 @@
 
 module github.com/espoon-voltti/s3-downloader
 
-go 1.26
+go 1.26.1
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
