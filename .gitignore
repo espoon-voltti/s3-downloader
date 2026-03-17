@@ -6,6 +6,9 @@
 /vendor/
 /bin/
 
+# Test downloads
+/downloads/
+
 # Editors & IDEs
 .idea/
 cmake-build-debug/

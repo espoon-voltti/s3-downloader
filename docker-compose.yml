@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2018-2020 City of Espoo
+#
+# SPDX-License-Identifier: MIT
+
+services:
+  # LocalStack provides local AWS cloud stack for testing
+  localstack:
+    image: localstack/localstack:latest
+    container_name: s3-downloader-localstack
+    ports:
+      - "4566:4566"      # LocalStack gateway
+    environment:
+      SERVICES: s3
+      DEBUG: 0
+    volumes:
+      - localstack-data:/var/lib/localstack
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # s3-downloader service (example usage)
+  s3-downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: s3-downloader
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_S3_FORCE_PATH_STYLE: "true"
+    volumes:
+      - downloads:/downloads
+    # Example: download all files from documents/ prefix
+    command: ["test-bucket", "documents", "/downloads"]
+    profiles:
+      - download
+
+volumes:
+  localstack-data:
+  downloads:
