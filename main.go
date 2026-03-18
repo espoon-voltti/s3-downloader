@@ -5,16 +5,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/sirupsen/logrus"
 )
 
@@ -50,32 +51,27 @@ func init() {
 }
 
 func main() {
+	ctx := context.Background()
 	bucket, prefix, targetDir := readArgs(os.Args)
 
-	cfg := &aws.Config{}
+	// Load AWS configuration (automatically reads AWS_ENDPOINT_URL from environment)
+	cfg, err := config.LoadDefaultConfig(ctx)
+	check(err, "Unable to load AWS configuration")
 
-	// Support custom endpoint (e.g., for MinIO or LocalStack)
-	if endpoint := os.Getenv("AWS_ENDPOINT_URL"); endpoint != "" {
-		cfg.Endpoint = aws.String(endpoint)
-	}
+	svc := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		// Enable path-style addressing for S3-compatible services like LocalStack
+		if os.Getenv("AWS_S3_FORCE_PATH_STYLE") == "true" {
+			o.UsePathStyle = true
+		}
+	})
 
-	// Enable path-style addressing for S3-compatible services
-	if os.Getenv("AWS_S3_FORCE_PATH_STYLE") == "true" {
-		cfg.S3ForcePathStyle = aws.Bool(true)
-	}
-
-	sess, err := session.NewSession(cfg)
-	check(err, "Unable to create AWS session")
-
-	svc := s3.New(sess)
-
-	resp, err := svc.ListObjects(&s3.ListObjectsInput{
+	resp, err := svc.ListObjects(ctx, &s3.ListObjectsInput{
 		Bucket: aws.String(bucket),
 		Prefix: aws.String(prefix),
 	})
 	check(err, "Unable to list objects in bucket: %v", bucket)
 
-	downloader := s3manager.NewDownloader(sess)
+	downloader := manager.NewDownloader(svc)
 	wg := sync.WaitGroup{}
 
 	for _, obj := range resp.Contents {
@@ -84,7 +80,7 @@ func main() {
 			continue
 		}
 		wg.Add(1)
-		go downloadObject(downloader, &wg, &DownloadDetails{
+		go downloadObject(ctx, downloader, &wg, &DownloadDetails{
 			Bucket:     bucket,
 			Key:        *obj.Key,
 			TargetFile: targetFilePath(*obj.Key, prefix, targetDir),
@@ -111,14 +107,14 @@ func readArgs(argv []string) (string, string, string) {
 	return bucket, prefix, targetDir
 }
 
-func downloadObject(downloader *s3manager.Downloader, wg *sync.WaitGroup, details *DownloadDetails) {
+func downloadObject(ctx context.Context, downloader *manager.Downloader, wg *sync.WaitGroup, details *DownloadDetails) {
 	defer wg.Done()
 
 	log.Info(fmt.Sprintf("Downloading object key: %v, file: %q", details.Key, details.TargetFile))
 	file := createFile(details.TargetFile)
 	defer file.Close()
 
-	_, err := downloader.Download(file, &s3.GetObjectInput{
+	_, err := downloader.Download(ctx, file, &s3.GetObjectInput{
 		Bucket: aws.String(details.Bucket),
 		Key:    aws.String(details.Key),
 	})
