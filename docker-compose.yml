@@ -5,7 +5,7 @@
 services:
   # LocalStack provides local AWS cloud stack for testing
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:4.14
     container_name: s3-downloader-localstack
     ports:
       - "4566:4566"      # LocalStack gateway
