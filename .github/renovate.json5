@@ -23,6 +23,9 @@
   // Pin all dependencies to exact versions
   rangeStrategy: "pin",
 
+  // Without this, go.sum keeps the checksums of every version ever used
+  postUpdateOptions: ["gomodTidy"],
+
   labels: ["dependencies"],
 
   packageRules: [
@@ -30,6 +33,11 @@
       // Automerge patch versions of all dependencies
       matchUpdateTypes: ["patch"],
       automerge: true,
+    },
+    {
+      // Don't pin GitHub Actions, keep tags like v1
+      matchManagers: ["github-actions"],
+      rangeStrategy: "replace",
     },
   ],
 }
