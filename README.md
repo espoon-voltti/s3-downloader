@@ -98,6 +98,7 @@ The setup script creates a bucket `test-bucket` with the following files:
 - `documents/doc1.txt`
 - `documents/doc2.txt`
 - `documents/subfolder/nested.txt`
+- `many/1.txt` to `many/1001.txt`, one more than a single listing page holds
 
 Test data files are automatically generated inside the LocalStack container by the `./scripts/test.sh` script.
 

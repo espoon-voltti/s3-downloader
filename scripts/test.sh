@@ -47,13 +47,18 @@ docker compose exec localstack sh -c '
   aws --endpoint-url=http://localhost:4566 s3 cp /tmp/doc1.txt s3://test-bucket/documents/doc1.txt &&
   aws --endpoint-url=http://localhost:4566 s3 cp /tmp/doc2.txt s3://test-bucket/documents/doc2.txt &&
   aws --endpoint-url=http://localhost:4566 s3 cp /tmp/nested.txt s3://test-bucket/documents/subfolder/nested.txt &&
-  
+
+  # One more than a single ListObjects page holds
+  mkdir -p /tmp/many &&
+  for i in $(seq 1 1001); do echo "$i" > "/tmp/many/$i.txt"; done &&
+  aws --endpoint-url=http://localhost:4566 s3 cp --recursive --quiet /tmp/many s3://test-bucket/many/ &&
+
   echo "Test data setup complete!"
 '
 
 echo ""
 echo "Running s3-downloader container..."
-docker compose run --rm s3-downloader
+docker compose run --rm --build s3-downloader
 
 echo ""
 echo "Checking downloaded files in volume..."
@@ -81,6 +86,19 @@ docker run --rm -v s3-downloader_downloads:/downloads alpine sh -c '
     exit 0
   else
     echo "✗ $MISSING file(s) missing"
+    exit 1
+  fi
+'
+
+echo ""
+echo "Downloading more objects than one listing page holds..."
+docker compose run --rm --entrypoint sh s3-downloader -c '
+  ./s3-downloader test-bucket many /tmp/many 2> /tmp/log || { cat /tmp/log; exit 1; }
+  COUNT=$(find /tmp/many -type f | wc -l)
+  if [ "$COUNT" -eq 1001 ]; then
+    echo "✓ All 1001 objects downloaded"
+  else
+    echo "✗ Only $COUNT of 1001 objects downloaded"
     exit 1
   fi
 '
