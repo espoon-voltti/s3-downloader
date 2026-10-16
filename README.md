@@ -139,10 +139,7 @@ make
 
 ## Releasing
 
-**NOTE:**: Requires a GitHub Personal access token configured as `GITHUB_TOKEN` for the CircleCI build (exists for @ci-voltti with scope `repo`)
-
-Workflow based on: <https://circleci.com/blog/publishing-to-github-releases-via-circleci/>
-and: <https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag>
+The `release` job in [build.yml](.github/workflows/build.yml) publishes the release with the workflow's own `GITHUB_TOKEN`.
 
 1. Ensure all changes have been reviewed & merged to `master` and you have no local changes
 1. `make release`

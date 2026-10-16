@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM golang:1.26-alpine AS builder
+FROM golang:1.27-alpine AS builder
 
 WORKDIR /app
 
 # Copy go mod files
-COPY go.mod go.sum.license ./
+COPY go.mod go.sum ./
 
 # Download dependencies
 RUN go mod download
@@ -25,7 +25,7 @@ FROM builder AS build
 RUN CGO_ENABLED=0 GOOS=linux go build -o s3-downloader .
 
 # Final stage
-FROM alpine:latest
+FROM alpine:3.24
 
 RUN apk --no-cache add ca-certificates
 
