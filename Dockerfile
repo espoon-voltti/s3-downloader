@@ -7,7 +7,7 @@ FROM golang:1.27-alpine AS builder
 WORKDIR /app
 
 # Copy go mod files
-COPY go.mod go.sum.license ./
+COPY go.mod go.sum ./
 
 # Download dependencies
 RUN go mod download
