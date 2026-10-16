@@ -25,7 +25,7 @@ FROM builder AS build
 RUN CGO_ENABLED=0 GOOS=linux go build -o s3-downloader .
 
 # Final stage
-FROM alpine:latest
+FROM alpine:3.24
 
 RUN apk --no-cache add ca-certificates
 
