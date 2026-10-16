@@ -8,23 +8,14 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/sirupsen/logrus"
 )
-
-// DownloadDetails of an S3 object to be downloaded
-type DownloadDetails struct {
-	Bucket     string
-	Key        string
-	TargetFile string
-}
 
 // Shared logger to always include static fields
 var log *logrus.Entry
@@ -65,34 +56,26 @@ func main() {
 		}
 	})
 
-	resp, err := svc.ListObjects(ctx, &s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
-		Prefix: aws.String(prefix),
+	out, err := transfermanager.New(svc).DownloadDirectory(ctx, &transfermanager.DownloadDirectoryInput{
+		Bucket:      aws.String(bucket),
+		KeyPrefix:   aws.String(prefix),
+		Destination: aws.String(targetDir),
+		Callback:    logDownload{},
 	})
-	check(err, "Unable to list objects in bucket: %v", bucket)
+	check(err, "Unable to download objects from bucket %v with prefix %q to %q", bucket, prefix, targetDir)
 
-	downloader := manager.NewDownloader(svc)
-	wg := sync.WaitGroup{}
-
-	for _, obj := range resp.Contents {
-		if strings.HasSuffix(*obj.Key, "/") {
-			// Skip folders
-			continue
-		}
-		wg.Add(1)
-		go downloadObject(ctx, downloader, &wg, &DownloadDetails{
-			Bucket:     bucket,
-			Key:        *obj.Key,
-			TargetFile: targetFilePath(*obj.Key, prefix, targetDir),
-		})
+	if out.ObjectsDownloaded == 0 {
+		log.Warn(fmt.Sprintf("No objects found in bucket %v with prefix %q", bucket, prefix))
+		return
 	}
-	// Wait for all download to finish before exiting
-	wg.Wait()
+	log.Info(fmt.Sprintf("Downloaded %d objects from bucket %v with prefix %q to %q", out.ObjectsDownloaded, bucket, prefix, targetDir))
 }
 
-func targetFilePath(key string, prefix string, targetDir string) string {
-	pathInDir := strings.TrimPrefix(key, prefix)
-	return filepath.Join(targetDir, pathInDir)
+// logDownload logs the key of each object just before DownloadDirectory requests it
+type logDownload struct{}
+
+func (logDownload) UpdateRequest(in *transfermanager.GetObjectInput) {
+	log.Info(fmt.Sprintf("Downloading object key: %v", aws.ToString(in.Key)))
 }
 
 func readArgs(argv []string) (string, string, string) {
@@ -101,36 +84,16 @@ func readArgs(argv []string) (string, string, string) {
 		log.Error(fmt.Sprintf("Wrong number of arguments provided. Usage: %s bucket prefix targetDir", argv[0]))
 		os.Exit(1)
 	}
-	bucket := argv[1]
-	prefix := ensureSuffix(argv[2], "/")
-	targetDir := ensureSuffix(argv[3], "/")
-	return bucket, prefix, targetDir
+	return argv[1], keyPrefix(argv[2]), argv[3]
 }
 
-func downloadObject(ctx context.Context, downloader *manager.Downloader, wg *sync.WaitGroup, details *DownloadDetails) {
-	defer wg.Done()
-
-	log.Info(fmt.Sprintf("Downloading object key: %v, file: %q", details.Key, details.TargetFile))
-	file := createFile(details.TargetFile)
-	defer file.Close()
-
-	_, err := downloader.Download(ctx, file, &s3.GetObjectInput{
-		Bucket: aws.String(details.Bucket),
-		Key:    aws.String(details.Key),
-	})
-	check(err, "Unable to download item %q from %q to destination %q", details.Key, details.Bucket, details.TargetFile)
-}
-
-func createFile(targetFile string) *os.File {
-	dir := filepath.Dir(targetFile)
-
-	err := os.MkdirAll(dir, os.ModePerm)
-	check(err, "Unable to create directory: %v", dir)
-
-	file, err := os.Create(targetFile)
-	check(err, "Unable to open file: %q", targetFile)
-
-	return file
+// keyPrefix makes a prefix match whole path segments only, so that "config"
+// does not also match "config-old/file". An empty prefix matches the whole bucket.
+func keyPrefix(prefix string) string {
+	if prefix == "" || strings.HasSuffix(prefix, "/") {
+		return prefix
+	}
+	return prefix + "/"
 }
 
 func check(err error, msg string, args ...interface{}) {
@@ -141,13 +104,6 @@ func check(err error, msg string, args ...interface{}) {
 		}).Error(fmt.Sprintf(msg, args...))
 		os.Exit(2)
 	}
-}
-
-func ensureSuffix(s string, suffix string) string {
-	if strings.HasSuffix(s, suffix) {
-		return s
-	}
-	return s + suffix
 }
 
 // Get environment variable value or default if not defined
