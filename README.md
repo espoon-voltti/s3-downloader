@@ -26,6 +26,10 @@ or [compile from source](#build)
 
 Usage: `./bin/s3downloader-linux-amd64 <bucket> <prefix> <targetDir>`
 
+Downloads every object under `<prefix>` to the same path below `<targetDir>`, so `config/app/a.yml`
+with prefix `config` ends up in `<targetDir>/app/a.yml`. An empty prefix (`""`) downloads the whole bucket.
+A key containing `..`, even inside a file name like `a..b.txt`, fails the whole download.
+
 ### Logging
 
 This tool logs in a simple JSON format (Voltti's "app-misc" type logs):
@@ -94,6 +98,7 @@ The setup script creates a bucket `test-bucket` with the following files:
 - `documents/doc1.txt`
 - `documents/doc2.txt`
 - `documents/subfolder/nested.txt`
+- `many/1.txt` to `many/1001.txt`, one more than a single listing page holds
 
 Test data files are automatically generated inside the LocalStack container by the `./scripts/test.sh` script.
 
